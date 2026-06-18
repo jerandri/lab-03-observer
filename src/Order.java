@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
@@ -9,24 +10,69 @@ public class Order {
     private double shippingCost;
     private List<OrderObserver> observers;
 
-    public Order(String id);
+    public Order(String id) {
+        this.id = id;
+        this.itemCount = 0;
+        this.itemCost = 0.0;
+        this.shippingCost = 10.0;
+        this.totalPrice = 0.0;
+        this.observers = new ArrayList<>();
+    }
 
-    public void attach(OrderObserver observer);
+    public void attach(OrderObserver observer) {
+        observers.add(observer);
+    }
 
-    public void detach(OrderObserver observer);
+    public void detach(OrderObserver observer) {
+        observers.remove(observer);
+    }
 
-    private void notifyObservers();
+    private void notifyObservers() {
+        for (OrderObserver observer : observers) {
+            observer.update(this);
+        }
+    }
 
-    public void addItem(double price);
+    public void addItem(double price) {
+        itemCount++;
+        itemCost += price;
+        totalPrice = itemCost + shippingCost;
+        notifyObservers();
+    }
 
-    public String getId();
-    public int getItemCount();
-    public double getItemCost();
-    public double getTotalPrice();
-    public double getShippingCost();
-    public void setTotalPrice(double totalPrice);
-    public void setShippingCost(double shipping);
+    public String getId() {
+        return id;
+    }
+
+    public int getItemCount() {
+        return itemCount;
+    }
+
+    public double getItemCost() {
+        return itemCost;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public double getShippingCost() {
+        return shippingCost;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setShippingCost(double shipping) {
+        this.shippingCost = shipping;
+    }
 
     @Override
-    public String toString();
+    public String toString() {
+        return String.format(
+            "Order[id=%s | items=%d | cost=%.2f | shipping=%.2f | total=%.2f]",
+            id, itemCount, itemCost, shippingCost, totalPrice
+        );
+    }
 }
